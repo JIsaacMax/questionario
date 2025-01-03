@@ -6,16 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(){
-        Schema::create('perguntas', function (Blueprint $table) {
+    public function up()
+    {
+        Schema::create('resultados', function (Blueprint $table) {
             $table->id();
-            $table->string('texto');
+            $table->foreignId('usuario_id')->constrained()->onDelete('cascade');
             $table->foreignId('questionario_id')->constrained()->onDelete('cascade');
+            $table->integer('pontuacao');
             $table->timestamps();
-    });
-}
+        });
+    }
+
+
     public function down(): void
     {
-        Schema::dropIfExists('perguntas');
+        Schema::dropIfExists('resultados');
     }
 };

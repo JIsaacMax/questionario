@@ -6,16 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(){
-        Schema::create('perguntas', function (Blueprint $table) {
+    public function up(): void
+    {
+        Schema::create('usuarios', function (Blueprint $table) {
             $table->id();
-            $table->string('texto');
-            $table->foreignId('questionario_id')->constrained()->onDelete('cascade');
+            $table->string('nome');
             $table->timestamps();
-    });
-}
+        });
+    }
+
     public function down(): void
     {
-        Schema::dropIfExists('perguntas');
+        Schema::dropIfExists('usuarios');
     }
 };

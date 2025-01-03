@@ -1,32 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questionários</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-</head>
-<body>
-    <h1>Questionários</h1>
-    <a href="{{ route('questionarios.create') }}">Novo Questionário</a>
-    <ul>
-        @foreach ($questionarios as $questionario)
-            <li>
-                <h2>{{ $questionario->titulo }}</h2>
-                <ul>
-                    @foreach ($questionario->perguntas as $pergunta)
-                        <li>
-                            {{ $pergunta->texto }}
-                            <ul>
-                                @foreach ($pergunta->respostas as $resposta)
-                                    <li>{{ $resposta->texto }} ({{ $resposta->correta ? 'Correta' : 'Errada' }})</li>
-                                @endforeach
-                            </ul>
-                        </li>
-                    @endforeach
-                </ul>
-            </li>
-        @endforeach
-    </ul>
-</body>
-</html>
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h1>Lista de Questionários</h1>
+
+    <a href="{{ route('questionarios.create') }}" class="btn btn-primary mb-3">Criar Novo Questionário</a>
+
+    <!-- Tabela de questionários -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($questionarios as $questionario)
+                <tr>
+                    <td>{{ $questionario->id }}</td>
+                    <td>{{ $questionario->titulo }}</td>
+                    <td>
+                        <a href="{{ route('questionarios.show', $questionario->id) }}" class="btn btn-info btn-sm">Visualizar</a>
+                        <a href="{{ route('responder.questionario', $questionario->id) }}" class="btn btn-success btn-sm">Responder</a>
+                        <form action="{{ route('questionarios.destroy', $questionario->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endsection
