@@ -81,39 +81,75 @@ class QuestionarioController extends Controller
     $request->validate(['nome' => 'required|string|max:255']);
 
     // Salvar o usuário no banco de dados
-    $usuario = Usuario::create(['nome' => $request->nome]);
-    $resultado = Resultado::create(['pontuacao' => $request->pontuacao]);
+    $usuario = Usuario::firstOrCreate(['nome' => $request->nome]);
 
     // Inicializar pontuação
     $pontuacao = 0;
 
     // Processar as respostas
     foreach ($questionario->perguntas as $pergunta) {
-        $respostaSelecionada = $request->input("respostas.{$pergunta->id}");
-
-        if ($respostaSelecionada) {
-            $resposta = Resposta::find($respostaSelecionada);
-            if ($resposta && $resposta->correta) {
-                $pontuacao++;
-            }
+        $respostaCorreta = $pergunta->respostas()->where('correta', true)->first();
+        if ($respostaCorreta && $request->respostas[$pergunta->id] == $respostaCorreta->id) {
+            $pontuacao++;
         }
     }
 
-    // Salvar a pontuação do usuário
-    $resultado->pontuacao = $pontuacao;
-    $resultado->save();
+    // Salvar o resultado
+    Resultado::create([
+        'usuario_id' => $usuario->id,
+        'questionario_id' => $questionario->id,
+        'pontuacao' => $pontuacao,
+    ]);
 
-    // Redirecionar para a página de resultado
-    return redirect()->route('questionarios.resultado', ['usuario' => $usuario, 'questionario' => $questionario]);
+
+    return redirect()->route('questionarios.resultado', ['usuario' => $usuario->id, 'questionario' => $questionario->id]);
     }
 
-    public function resultado(Usuario $usuario, Questionario $questionario, Resultado $resultado)
+    public function resultado(Request $request, $usuarioId, $questionarioId)
     {
-        // Obter a pontuação do usuário
-        $pontuacao = $resultado->pontuacao;
+        // Buscar o usuário
+        $usuario = Usuario::findOrFail($usuarioId);
 
-        // Retornar a view do resultado com os dados necessários
-        return view('questionarios.resultado', compact('usuario', 'pontuacao', 'questionario'));
+        // Buscar o questionário
+        $questionario = Questionario::findOrFail($questionarioId);
+
+        // Buscar o último resultado do usuário para este questionário
+        $resultado = Resultado::where('usuario_id', $usuario->id)
+            ->where('questionario_id', $questionario->id)
+            ->latest() // Ordena pelos mais recentes
+            ->first(); // Pega apenas o primeiro
+
+        // Caso não haja resultado, redirecione ou mostre uma mensagem
+        if (!$resultado) {
+            return redirect()->route('questionarios.index')->withErrors(['error' => 'Nenhum resultado encontrado para este questionário.']);
+        }
+
+        // Retornar a view de resultado
+        return view('questionarios.resultado', [
+            'usuario' => $usuario,
+            'questionario' => $questionario,
+            'resultado' => $resultado,
+        ]);
     }
 
+    public function destroy($id)
+    {
+        // Encontre o questionário pelo ID
+        $questionario = Questionario::findOrFail($id);
+
+        // Delete o questionário e seus relacionamentos
+        $questionario->delete();
+
+        // Redirecione com uma mensagem de sucesso
+        return redirect()->route('questionarios.index')->with('success', 'Questionário excluído com sucesso!');
+    }
+
+    public function show($id)
+    {
+    // Encontre o questionário pelo ID
+    $questionario = Questionario::with('perguntas.respostas')->findOrFail($id);
+
+    // Retorne a view para exibir o questionário
+    return view('questionarios.show', compact('questionario'));
+    }
 }
