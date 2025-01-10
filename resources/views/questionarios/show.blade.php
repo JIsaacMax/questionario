@@ -16,7 +16,7 @@
             </ul>
         </div>
     @endforeach
-
-    <a href="{{ route('questionarios.index') }}" class="btn btn-primary">Voltar</a>
+    
+    <a href="{{ route('questionarios.index') }}" class="btn btn-primary mt-3">Voltar para Questionários</a>
 </div>
 @endsection

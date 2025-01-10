@@ -2,46 +2,102 @@
 
 @section('content')
 <div class="container">
-    <h1>Editar Questionário</h1>
-
-    <form action="{{ route('questionarios.update', $questionario->id) }}" method="POST">
+    <h1>Editar Questionário: {{ $questionario->titulo }}</h1>
+    <form action="{{ route('questionarios.atualizar', $questionario) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <div class="mb-3">
-            <label for="titulo" class="form-label">Título do Questionário</label>
+        <!-- Título do questionário -->
+        <div class="form-group">
+            <label for="titulo">Título do Questionário:</label>
             <input type="text" id="titulo" name="titulo" class="form-control" value="{{ $questionario->titulo }}" required>
         </div>
 
+        <!-- Perguntas e Respostas -->
         <div id="perguntas-container">
-            @foreach ($questionario->perguntas as $index => $pergunta)
-                <div class="pergunta mb-4">
-                    <label for="perguntas[{{ $index }}][texto]" class="form-label">Pergunta</label>
-                    <input type="text" name="perguntas[{{ $index }}][texto]" class="form-control" value="{{ $pergunta->texto }}" required>
-                    <input type="hidden" name="perguntas[{{ $index }}][id]" value="{{ $pergunta->id }}">
+            @foreach ($questionario->perguntas as $pergunta)
+                <div class="pergunta mb-4" data-index="{{ $loop->index }}">
+                    <h5>Pergunta {{ $loop->iteration }}</h5>
+                    <input type="hidden" name="perguntas[{{ $loop->index }}][id]" value="{{ $pergunta->id }}">
+                    <input type="text" name="perguntas[{{ $loop->index }}][texto]" class="form-control mb-2" value="{{ $pergunta->texto }}" required>
 
-                    <div class="respostas-container mt-3">
-                        @foreach ($pergunta->respostas as $respostaIndex => $resposta)
-                            <div class="resposta mb-2">
-                                <input type="text" name="perguntas[{{ $index }}][respostas][{{ $respostaIndex }}][texto]" class="form-control" value="{{ $resposta->texto }}" required>
-                                <input type="hidden" name="perguntas[{{ $index }}][respostas][{{ $respostaIndex }}][id]" value="{{ $resposta->id }}">
-                                <input type="radio" name="perguntas[{{ $index }}][respostas][{{ $respostaIndex }}][correta]" value="${respostaCount}" {{ $resposta->correta ? 'checked' : '' }}> Correta
+                    <!-- Respostas -->
+                    <div class="respostas-container">
+                        @foreach ($pergunta->respostas as $resposta)
+                            <div class="resposta">
+                                <h5>Resposta {{ $loop->iteration }}</h5>
+                                <input type="hidden" name="perguntas[{{ $loop->parent->index }}][respostas][{{ $loop->index }}][id]" value="{{ $resposta->id }}">
+                                <input type="text" name="perguntas[{{ $loop->parent->index }}][respostas][{{ $loop->index }}][texto]" class="form-control mb-1" value="{{ $resposta->texto }}" required>
+                                <label>
+                                    <input type="radio" name="perguntas[{{ $loop->parent->index }}][correta]" value="{{ $resposta->id }}" {{ $resposta->correta ? 'checked' : '' }}>
+                                    Resposta Correta
+                                </label>
                             </div>
                         @endforeach
                     </div>
 
-                    <button type="button" class="btn btn-secondary add-resposta-btn mt-2">Adicionar Resposta</button>
+                    <!-- Botão para adicionar resposta -->
+                    <button type="button" class="btn btn-secondary btn-sm add-resposta" data-pergunta-index="{{ $loop->index }}">Adicionar Resposta</button>
                 </div>
             @endforeach
         </div>
 
-        <button type="button" class="btn btn-primary bt-sm">Adicionar Pergunta</button>
+        <!-- Botão para adicionar pergunta -->
+        <button type="button" id="add-pergunta" class="btn btn-primary bt-sm">Adicionar Pergunta</button>
+        <!-- Botão para salvar -->
         <button type="submit" class="btn btn-success bt-sm">Salvar Alterações</button>
-        <a href="{{ route('questionarios.index') }}" class="btn btn-primary bt-sm">Voltar à Lista de Questionários</a>
+        <!-- Botão para voltar à lista de questionários -->
+        <a href="{{ route('questionarios.index') }}" class="btn btn-secondary bt-sm">Voltar aos Questionários</a>
     </form>
 </div>
 
+<!-- Scripts para adicionar perguntas e respostas dinamicamente -->
 <script>
-    // Scripts para adicionar perguntas e respostas dinamicamente
+    document.getElementById('add-pergunta').addEventListener('click', function () {
+        const perguntasContainer = document.getElementById('perguntas-container');
+        const perguntaIndex = perguntasContainer.children.length;
+
+        const novaPergunta = `
+            <div class="pergunta mb-4" data-index="${perguntaIndex}">
+                <h5>Pergunta ${perguntaIndex + 1}</h5>
+                <input type="text" name="perguntas[${perguntaIndex}][texto]" class="form-control mb-2" placeholder="Texto da pergunta" required>
+                <div class="respostas-container"></div>
+                <button type="button" class="btn btn-secondary btn-sm add-resposta" data-pergunta-index="${perguntaIndex}">Adicionar Resposta</button>
+            </div>
+        `;
+
+        perguntasContainer.insertAdjacentHTML('beforeend', novaPergunta);
+
+        const addRespostaButton = perguntasContainer.querySelector(`.pergunta[data-index="${perguntaIndex}"] .add-resposta`);
+        addRespostaButton.addEventListener('click', function () {
+            adicionarResposta(perguntaIndex);
+        });
+    });
+
+    function adicionarResposta(perguntaIndex) {
+        const perguntaElement = document.querySelector(`.pergunta[data-index="${perguntaIndex}"]`);
+        const respostasContainer = perguntaElement.querySelector('.respostas-container');
+        const respostaIndex = respostasContainer.children.length;
+
+        const novaResposta = `
+            <div class="resposta mb-2">
+                <h5>Resposta ${respostaIndex + 1}</h5>
+                <input type="text" name="perguntas[${perguntaIndex}][respostas][${respostaIndex}][texto]" class="form-control mb-1" placeholder="Texto da resposta" required>
+                <label>
+                    <input type="radio" name="perguntas[${perguntaIndex}][correta]" value="${respostaIndex}">
+                    Resposta Correta
+                </label>
+            </div>
+        `;
+
+        respostasContainer.insertAdjacentHTML('beforeend', novaResposta);
+    }
+
+    document.querySelectorAll('.add-resposta').forEach(button => {
+        button.addEventListener('click', function () {
+            const perguntaIndex = this.getAttribute('data-pergunta-index');
+            adicionarResposta(perguntaIndex);
+        });
+    });
 </script>
 @endsection

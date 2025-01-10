@@ -1,17 +1,41 @@
-@extends('layouts.app') <!-- Usa o layout base da aplicação -->
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
-    <!-- Título da página -->
-    <h1>Resultado</h1>
+    <h1>Resultado do Questionário: {{ $questionario->titulo}}</h1>
 
-    <!-- Mensagem de agradecimento -->
-    <p>Obrigado, {{ $usuario->nome }}!</p>
-
+    <!-- Pontuação total -->
+    <div class="alert alert-info">
+        Obrigado, <strong>{{ $usuario->nome }}</strong>!
     <!-- Exibição da pontuação -->
-    <p>Você conseguiu {{ $resultado->pontuacao}} ponto(s) em {{ $questionario->perguntas->count() }} pergunta(s).</p>
+        Você conseguiu <strong>{{ $resultado->pontuacao}} ponto(s)</strong> em <strong>{{ $questionario->perguntas->count() }} pergunta(s)</strong>.
+    </div>
 
-    <!-- Botão para voltar à lista de questionários -->
-    <a href="{{ route('questionarios.index') }}" class="btn btn-secondary">Voltar aos Questionários</a>
+    <!-- Lista de perguntas e respostas -->
+    <div class="card">
+        <div class="card-body">
+            <h4>Respostas:</h4>
+            @foreach ($questionario->perguntas as $pergunta)
+                <div class="mb-4">
+                    <h5>{{ $pergunta->texto }}</h5>
+
+                    @foreach ($pergunta->respostas as $resposta)
+                        <div 
+                            class="p-2 {{ $resposta->correta ? 'bg-success text-white' : '' }}" 
+                            style="border: 1px solid #ccc; border-radius: 5px; margin-bottom: 5px;">
+                            {{ $resposta->texto }}
+
+                            @if ($resposta->correta)
+                                <strong>(Correta)</strong>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <!-- Botão para voltar -->
+    <a href="{{ route('questionarios.index') }}" class="btn btn-primary mt-3">Voltar para Questionários</a>
 </div>
 @endsection

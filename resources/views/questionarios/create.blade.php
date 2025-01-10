@@ -17,10 +17,10 @@
         <div id="perguntas-container"></div>
 
         <!-- Botão para adicionar perguntas -->
-        <button type="button" class="btn btn-secondary mb-3" id="add-pergunta">Adicionar Pergunta</button>
+        <button type="button" class="btn btn-secondary bt-sm mb-3" id="add-pergunta">Adicionar Pergunta</button>
 
         <!-- Botão para salvar o questionário -->
-        <button type="submit" class="btn btn-primary">Salvar Questionário</button>
+        <button type="submit" class="btn btn-primary bt-sm mb-3">Salvar Questionário</button>
     </form>
 </div>
 
