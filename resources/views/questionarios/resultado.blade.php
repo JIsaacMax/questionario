@@ -9,7 +9,7 @@
     <p>Obrigado, {{ $usuario->nome }}!</p>
 
     <!-- Exibição da pontuação -->
-    <p>Você acertou {{ $resultado->pontuacao}} de {{ $questionario->perguntas->count() }} perguntas.</p>
+    <p>Você conseguiu {{ $resultado->pontuacao}} ponto(s) em {{ $questionario->perguntas->count() }} pergunta(s).</p>
 
     <!-- Botão para voltar à lista de questionários -->
     <a href="{{ route('questionarios.index') }}" class="btn btn-secondary">Voltar aos Questionários</a>

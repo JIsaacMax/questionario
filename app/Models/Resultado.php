@@ -11,11 +11,11 @@ class Resultado extends Model
 
     protected $fillable = ['usuario_id', 'questionario_id', 'pontuacao'];
 
-    public function usuarios()
+    public function usuario()
     {
         return $this->belongsTo(Usuario::class);
     }
-
+    
     public function questionario()
     {
         return $this->belongsTo(Questionario::class);

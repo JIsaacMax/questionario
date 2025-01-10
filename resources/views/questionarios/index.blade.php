@@ -21,9 +21,11 @@
                     <td>{{ $questionario->id }}</td>
                     <td>{{ $questionario->titulo }}</td>
                     <td>
-                        <a href="{{ route('questionarios.show', $questionario->id) }}" class="btn btn-info btn-sm">Visualizar</a>
+                        <a href="{{ route('questionarios.show', $questionario->id) }}" class="btn btn-info btn-sm">Visualizar Questionário</a>
+                        <a href="{{ route('resultados.por_questionario', $questionario->id) }}" class="btn btn-primary btn-sm">Visualizar Resultados</a>
                         <a href="{{ route('responder.questionario', $questionario->id) }}" class="btn btn-success btn-sm">Responder</a>
-                        <form action="{{ route('questionarios.destroy', $questionario->id) }}" method="POST" class="d-inline">
+                        <a href="{{ route('questionarios.edit', $questionario->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                        <form action="{{ route('questionarios.apagarQuestionario', $questionario->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Excluir</button>

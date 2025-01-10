@@ -12,4 +12,10 @@ class Questionario extends Model
     {
         return $this->hasMany(Pergunta::class);
     }
+
+    public function resultados()
+    {
+        return $this->hasMany(Resultado::class);
+    }
+    
 }

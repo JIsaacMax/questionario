@@ -24,7 +24,8 @@
                     <div>
                         <label>
                             <!-- Botão de rádio para selecionar a resposta -->
-                            <input type="radio" name="respostas[{{ $pergunta->id }}]" value="{{ $resposta->id }}" required>
+                            <!-- <input type="radio" name="respostas[{{ $pergunta->id }}]" value="{{ $resposta->id }}" required>-->
+                            <input type="number" name="respostas[{{ $resposta->id }}]" min="0" max="4" value="0" class="form-control" style="width: 80px; display: inline-block;">
                             {{ $resposta->texto }} <!-- Texto da resposta -->
                         </label>
                     </div>
