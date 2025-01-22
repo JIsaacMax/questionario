@@ -157,7 +157,7 @@ class QuestionarioController extends Controller
         return view('resultados.index', compact('questionario'));
     }
 
-    public function apagarQuestionario($id)
+    public function destroy($id)
     {
         // Encontre o questionário pelo ID
         $questionario = Questionario::findOrFail($id);
@@ -248,8 +248,6 @@ class QuestionarioController extends Controller
                 ]);
             }
         }
-
         return redirect()->route('questionarios.index')->with('success', 'Questionário atualizado com sucesso!');
     }
-
 }

@@ -12,7 +12,7 @@
 
         <!-- Campo para o nome do usuário -->
         <div class="form-group">
-            <label for="nome">Seu Nome:</label>
+            <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" class="form-control" required>
         </div>
 
