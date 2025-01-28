@@ -7,19 +7,14 @@
     <form action="{{ route('questionarios.store') }}" method="POST">
         @csrf
 
-        <!-- Campo para o título do questionário -->
         <div class="form-group mb-3">
             <label for="titulo">Título do Questionário:</label>
             <input type="text" id="titulo" name="titulo" class="form-control" required>
         </div>
 
-        <!-- Div onde as perguntas serão adicionadas dinamicamente -->
         <div id="perguntas-container"></div>
-
-        <!-- Botão para adicionar perguntas -->
         <button type="button" class="btn btn-secondary bt-sm mb-3" id="add-pergunta">Adicionar Pergunta</button>
 
-        <!-- Botão para salvar o questionário -->
         <button type="submit" class="btn btn-primary bt-sm mb-3">Salvar Questionário</button>
     </form>
 </div>

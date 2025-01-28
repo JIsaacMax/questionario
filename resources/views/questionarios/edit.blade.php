@@ -7,13 +7,11 @@
         @csrf
         @method('PUT')
 
-        <!-- Título do questionário -->
         <div class="form-group">
             <label for="titulo">Título do Questionário:</label>
             <input type="text" id="titulo" name="titulo" class="form-control" value="{{ $questionario->titulo }}" required>
         </div>
 
-        <!-- Perguntas e Respostas -->
         <div id="perguntas-container">
             @foreach ($questionario->perguntas as $pergunta)
                 <div class="pergunta mb-4" data-index="{{ $loop->index }}">
@@ -21,7 +19,6 @@
                     <input type="hidden" name="perguntas[{{ $loop->index }}][id]" value="{{ $pergunta->id }}">
                     <input type="text" name="perguntas[{{ $loop->index }}][texto]" class="form-control mb-2" value="{{ $pergunta->texto }}" required>
 
-                    <!-- Respostas -->
                     <div class="respostas-container">
                         @foreach ($pergunta->respostas as $resposta)
                             <div class="resposta">
@@ -36,22 +33,19 @@
                         @endforeach
                     </div>
 
-                    <!-- Botão para adicionar resposta -->
+                    
                     <button type="button" class="btn btn-secondary btn-sm add-resposta" data-pergunta-index="{{ $loop->index }}">Adicionar Resposta</button>
                 </div>
             @endforeach
         </div>
 
-        <!-- Botão para adicionar pergunta -->
         <button type="button" id="add-pergunta" class="btn btn-primary bt-sm">Adicionar Pergunta</button>
-        <!-- Botão para salvar -->
         <button type="submit" class="btn btn-success bt-sm">Salvar Alterações</button>
-        <!-- Botão para voltar à lista de questionários -->
         <a href="{{ route('questionarios.index') }}" class="btn btn-secondary bt-sm">Voltar aos Questionários</a>
     </form>
 </div>
 
-<!-- Scripts para adicionar perguntas e respostas dinamicamente -->
+
 <script>
     document.getElementById('add-pergunta').addEventListener('click', function () {
         const perguntasContainer = document.getElementById('perguntas-container');

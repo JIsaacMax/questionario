@@ -24,12 +24,11 @@ class QuestionarioController extends Controller
 
     public function store(Request $request)
     {
-        // Valide os dados enviados
         $data = $request->validate(['titulo' => 'required|string|max:255']);
         $questionario = Questionario::create($data);
 
         foreach ($request->perguntas as $perguntaData) {
-            // Crie a pergunta
+            // Cria pergunta
             $pergunta = $questionario->perguntas()->create([
                 'texto' => $perguntaData['texto'],
             ]);
@@ -58,7 +57,7 @@ class QuestionarioController extends Controller
                     ]);
                 }
 
-                // Crie a resposta
+                // Cria resposta
                 $pergunta->respostas()->create([
                     'texto' => $respostaData['texto'],
                     'correta' => $isCorreta,
@@ -66,7 +65,6 @@ class QuestionarioController extends Controller
             }
     }
 
-    // Redirecione após o sucesso
         return redirect()->route('questionarios.index');
     }
 
@@ -77,10 +75,8 @@ class QuestionarioController extends Controller
 
     public function salvarResposta(Request $request, Questionario $questionario)
     {
-        // Validação do nome do usuário
         $request->validate(['nome' => 'required|string|max:255']);
-
-        // Salvar o usuário no banco de dados
+        // Salva o usuário
         $usuario = Usuario::firstOrCreate(['nome' => $request->nome]);
         
         // Contém os IDs das respostas e os pontos atribuídos
@@ -102,7 +98,6 @@ class QuestionarioController extends Controller
             }
         }
 
-        // Salva o resultado no banco de dados
         Resultado::create([
             'usuario_id' => $usuario->id,
             'questionario_id' => $questionario->id,
@@ -114,10 +109,7 @@ class QuestionarioController extends Controller
 
     public function resultado(Request $request, $usuarioId, $questionarioId)
     {
-        // Buscar o usuário
         $usuario = Usuario::findOrFail($usuarioId);
-
-        // Buscar o questionário
         $questionario = Questionario::findOrFail($questionarioId);
 
         // Buscar o último resultado do usuário para este questionário
@@ -126,12 +118,10 @@ class QuestionarioController extends Controller
             ->latest() // Ordena pelos mais recentes
             ->first(); // Pega apenas o primeiro
 
-        // Caso não haja resultado, redirecione ou mostre uma mensagem
         if (!$resultado) {
             return redirect()->route('questionarios.index')->withErrors(['error' => 'Nenhum resultado encontrado para este questionário.']);
         }
 
-        // Retornar a view de resultado
         return view('questionarios.resultado', [
             'usuario' => $usuario,
             'questionario' => $questionario,
@@ -141,62 +131,40 @@ class QuestionarioController extends Controller
 
     public function resultados()
     {
-        // Busca todos os questionários
         $questionarios = Questionario::all();
-
-        // Retorna a view com os questionários
         return view('resultados.selecionar', compact('questionarios'));
     }
 
     public function resultadosPorQuestionario($id)
     {
-        // Busca o questionário específico
         $questionario = Questionario::with('resultados.usuario')->findOrFail($id);
-
-        // Retorna a view com os resultados do questionário
         return view('resultados.index', compact('questionario'));
     }
 
     public function destroy($id)
     {
-        // Encontre o questionário pelo ID
         $questionario = Questionario::findOrFail($id);
-
-        // Delete o questionário e seus relacionamentos
         $questionario->delete();
-
-        // Redirecione com uma mensagem de sucesso
         return redirect()->route('questionarios.index')->with('success', 'Questionário excluído com sucesso!');
     }
 
     public function apagarResultados($id)
     {
-        // Encontre o questionário
         $questionario = Questionario::findOrFail($id);
-
-        // Apague os resultados relacionados ao questionário
         $questionario->resultados()->delete();
-
-        // Redirecione de volta para a página de seleção com uma mensagem de sucesso
         return redirect()->route('questionarios.index')->with('success', 'Resultados do questionário "' . $questionario->titulo . '" foram apagados com sucesso.');
     }
 
     
     public function show($id)
     {
-        // Encontre o questionário pelo ID
         $questionario = Questionario::with('perguntas.respostas')->findOrFail($id);
-
-        // Retorne a view para exibir o questionário
         return view('questionarios.show', compact('questionario'));
     }
 
     public function edit(Questionario $questionario)
     {
-        // Busca o questionário pelo ID com perguntas e respostas
         $questionario = Questionario::with('perguntas.respostas')->findOrFail($questionario->id);
-
-        // Retorna a view de edição
         return view('questionarios.edit', compact('questionario'));
     }
 

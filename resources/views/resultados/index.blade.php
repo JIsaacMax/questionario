@@ -17,7 +17,7 @@
                 <tr>
                     <td>{{ $resultado->usuario->nome }}</td>
                     <td>{{ $resultado->pontuacao }}</td>
-                    <td>{{ $resultado->created_at->format('d/m/Y H:i') }}</td>
+                    <td>{{ $resultado->created_at->format('d/m/Y') }}</td>
                 </tr>
             @empty
                 <tr>

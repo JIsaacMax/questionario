@@ -4,14 +4,12 @@
 <div class="container">
     <h1>Resultado do Questionário: {{ $questionario->titulo}}</h1>
 
-    <!-- Pontuação total -->
     <div class="alert alert-info">
         Obrigado, <strong>{{ $usuario->nome }}</strong>!
     <!-- Exibição da pontuação -->
         Você conseguiu <strong>{{ $resultado->pontuacao}} ponto(s)</strong> em <strong>{{ $questionario->perguntas->count() }} pergunta(s)</strong>.
     </div>
 
-    <!-- Lista de perguntas e respostas -->
     <div class="card">
         <div class="card-body">
             <h4>Respostas:</h4>
@@ -34,8 +32,7 @@
             @endforeach
         </div>
     </div>
-
-    <!-- Botão para voltar -->
+    
     <a href="{{ route('questionarios.index') }}" class="btn btn-primary mt-3">Voltar para Questionários</a>
 </div>
 @endsection
