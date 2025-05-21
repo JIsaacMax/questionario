@@ -63,7 +63,7 @@ class QuestionarioController extends Controller
                     'correta' => $isCorreta,
                 ]);
             }
-    }
+        }
 
         return redirect()->route('questionarios.index');
     }
@@ -78,9 +78,9 @@ class QuestionarioController extends Controller
         $request->validate(['nome' => 'required|string|max:255']);
         // Salva o usuário
         $usuario = Usuario::firstOrCreate(['nome' => $request->nome]);
-        
+
         // Contém os IDs das respostas e os pontos atribuídos
-        $respostasUsuario = $request->input('respostas'); 
+        $respostasUsuario = $request->input('respostas');
 
         $pontosAtribuidos = 0;
         $pontuacaoFinal = 0;
@@ -155,7 +155,7 @@ class QuestionarioController extends Controller
         return redirect()->route('questionarios.index')->with('success', 'Resultados do questionário "' . $questionario->titulo . '" foram apagados com sucesso.');
     }
 
-    
+
     public function show($id)
     {
         $questionario = Questionario::with('perguntas.respostas')->findOrFail($id);

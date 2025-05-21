@@ -17,3 +17,4 @@ Route::get('/resultados', [QuestionarioController::class, 'resultados'])->name('
 Route::get('/resultados/{questionario}', [QuestionarioController::class, 'resultadosPorQuestionario'])->name('resultados.por_questionario');
 Route::delete('/resultados/{questionario}', [QuestionarioController::class, 'apagarResultados'])->name('resultados.apagar');
 Route::get('/questionarios/{questionario}/responder', [QuestionarioController::class, 'responder'])->name('questionarios.responder');
+Route::view('/login-simples', 'auth.login-simples')->name('login.simples');

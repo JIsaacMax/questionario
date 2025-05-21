@@ -1,60 +1,96 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container">
-    <h1>Criar Questionário</h1>
+@section('title', 'Criar Questionário')
 
-    <form action="{{ route('questionarios.store') }}" method="POST">
+@section('content')
+<div class="max-w-3xl mx-auto px-4 py-6 bg-white dark:bg-gray-900 rounded-lg shadow">
+    <h1 class="text-2xl font-semibold mb-6">Criar Questionário</h1>
+
+    <form action="{{ route('questionarios.store') }}" method="POST" class="space-y-6">
         @csrf
 
-        <div class="form-group mb-3">
-            <label for="titulo">Título do Questionário:</label>
-            <input type="text" id="titulo" name="titulo" class="form-control" required>
+        <div>
+            <label for="titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título do Questionário</label>
+            <input type="text" id="titulo" name="titulo"
+                class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:text-gray-400"
+                required>
         </div>
 
-        <div id="perguntas-container"></div>
-        <button type="button" class="btn btn-secondary bt-sm mb-3" id="add-pergunta">Adicionar Pergunta</button>
+        <div id="perguntas-container" class="space-y-6"></div>
 
-        <button type="submit" class="btn btn-primary bt-sm mb-3">Salvar Questionário</button>
+        <div class="flex space-x-2">
+            <button type="button" id="add-pergunta"
+                class="px-4 py-2 bg-gray-200 text-gray-800 dark:text-gray-600 rounded-lg hover:bg-gray-300 transition">
+                + Adicionar Pergunta
+            </button>
+            <button type="submit"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                Salvar Questionário
+            </button>
+        </div>
     </form>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', () => {
         let perguntaCount = 0;
 
-        document.getElementById('add-pergunta').addEventListener('click', function () {
-            perguntaCount++;
-            const perguntasContainer = document.getElementById('perguntas-container');
+        const perguntasContainer = document.getElementById('perguntas-container');
+        const addPerguntaBtn = document.getElementById('add-pergunta');
 
-            const perguntaDiv = document.createElement('div');
-            perguntaDiv.classList.add('mb-4');
-            perguntaDiv.innerHTML = `
-                <label>Pergunta:</label>
-                <input type="text" name="perguntas[${perguntaCount}][texto]" class="form-control mb-2" required>
-                
-                <div class="respostas-container mb-2"></div>
-                <button type="button" class="btn btn-secondary btn-sm add-resposta" data-pergunta-index="${perguntaCount}">Adicionar Resposta</button>
+        addPerguntaBtn.addEventListener('click', () => {
+            perguntaCount++;
+            const divPergunta = document.createElement('div');
+            divPergunta.className = 'space-y-4 border p-4 rounded-lg';
+
+            divPergunta.innerHTML = `
+                <div class="flex justify-between items-center">
+                  <h2 class="text-lg font-medium">Pergunta ${perguntaCount}</h2>
+                  <button type="button" data-index="${perguntaCount}" class="remove-pergunta text-red-500 hover:text-red-700">&times;</button>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">Texto</label>
+                  <input type="text" name="perguntas[${perguntaCount}][texto]" class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"required>
+                </div>
+                <div id="respostas-${perguntaCount}" class="space-y-3"></div>
+                <button type="button" data-pergunta-index="${perguntaCount}" class="add-resposta px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-200 transition">
+                  + Resposta
+                </button>
             `;
 
-            perguntasContainer.appendChild(perguntaDiv);
+            perguntasContainer.appendChild(divPergunta);
 
-            perguntaDiv.querySelector('.add-resposta').addEventListener('click', function () {
-                const perguntaIndex = this.dataset.perguntaIndex;
-                const respostasContainer = perguntaDiv.querySelector('.respostas-container');
+            // remover pergunta
+            divPergunta.querySelector('.remove-pergunta')
+                .addEventListener('click', () => divPergunta.remove());
 
-                const respostaCount = respostasContainer.children.length;
-                const respostaDiv = document.createElement('div');
-                respostaDiv.classList.add('mb-2');
-                respostaDiv.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <input type="text" name="perguntas[${perguntaIndex}][respostas][${respostaCount}][texto]" class="form-control me-2" placeholder="Resposta" required>
-                        <label class="me-2">Correta:</label>
-                        <input type="radio" name="perguntas[${perguntaIndex}][correta]" value="${respostaCount}">
-                    </div>
-                `;
-                respostasContainer.appendChild(respostaDiv);
-            });
+            // adicionar resposta
+            divPergunta.querySelector('.add-resposta')
+                .addEventListener('click', function() {
+                    const idx = this.dataset.perguntaIndex;
+                    const cont = document.getElementById(`respostas-${idx}`);
+                    const respCount = cont.children.length + 1;
+
+                    const divResp = document.createElement('div');
+                    divResp.className = 'flex items-center space-x-2';
+
+                    divResp.innerHTML = `
+                      <input type="text" name="perguntas[${idx}][respostas][${respCount}][texto]"
+                             placeholder="Texto da resposta"
+                             class="flex-1 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                             required>
+                      <label class="flex items-center space-x-1 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="radio" name="perguntas[${idx}][correta]" value="${respCount}" class="text-indigo-600">
+                        <span>Correta</span>
+                      </label>
+                      <button type="button" class="remove-resposta text-red-500 hover:text-red-700">&times;</button>
+                    `;
+
+                    cont.appendChild(divResp);
+
+                    divResp.querySelector('.remove-resposta')
+                        .addEventListener('click', () => divResp.remove());
+                });
         });
     });
 </script>
